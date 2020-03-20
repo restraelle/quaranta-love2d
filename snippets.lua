@@ -1,3 +1,7 @@
+lg = love.graphics;
+la = love.audio;
+lw = love.window;
+
 function lerp(v0, v1, t, dt)
   return v0 + (v1 - v0) * t * dt;
 end
