@@ -1,10 +1,12 @@
 Renderer = class('Renderer');
 
-function Renderer:initialize()
+function Renderer:initialize(scale)
   lg.setDefaultFilter("nearest", "nearest", 1);
   
-  self.scale = 2;
+  self.scale = scale or 1;
   self.screen = {};
+  
+  -- 240 x 160
   self.screen.x = 240;
   self.screen.y = 160;
   

@@ -1,6 +1,7 @@
 lg = love.graphics;
 la = love.audio;
 lw = love.window;
+lk = love.keyboard;
 
 function lerp(v0, v1, t, dt)
   return v0 + (v1 - v0) * t * dt;
@@ -10,7 +11,7 @@ function refloat(v, pointPlaces)
   return math.floor(v * math.pow(10, pointPlaces)) / math.pow(10, pointPlaces);
 end
 
-function clamp(low, n, high) return math.min(math.max(low, n), high) end
+function clamp(n, low, high) return math.min(math.max(low, n), high) end
 
 function split(stringArg, delimiter)
 	local result = {}

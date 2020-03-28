@@ -1,7 +1,8 @@
 Conductor = class('Conductor');
 
-function Conductor:initialize(source, bpm)
+function Conductor:initialize(source, bpm, offset)
   self.audioSource = la.newSource(source, "static");
+  self.audioSource:setVolume(settings.sound.volume.music * settings.sound.volume.master);
   
   self.bpm = bpm;
   
@@ -19,7 +20,7 @@ function Conductor:initialize(source, bpm)
   self.tickLength = 0.1;
   
   self.calculationLerpTime = 1/10;
-  self.offset = 0;
+  self.offset = offset;
   
   self.samples = {};
   self.samples.source = self.audioSource:tell("samples");
@@ -30,6 +31,9 @@ function Conductor:initialize(source, bpm)
   self.seconds.calculated = 0;
   self.seconds.real = 0;
   
+  -- this is the important one
+  self.clock = 0;
+  
   self.isPlaying = false;
   
   self.debug = {};
@@ -39,12 +43,23 @@ function Conductor:initialize(source, bpm)
   self.debug.width = 400;
   self.debug.columnCharacterWidth = 20;
   self.debug.lineHeight = 8;
-  
-  self.audioSource:play();
-  
 end
 
 Conductor.static.globalTimeStretch = 1;
+
+function Conductor:play()
+  self.audioSource:play();
+  self.isPlaying = true;
+end
+
+function Conductor:pause()
+  self.audioSource:pause();
+  self.isPlaying = false;
+end
+
+function Conductor:stop()
+  self.audioSource:stop();
+end
 
 function Conductor:update(deltaTime)
   
@@ -66,6 +81,8 @@ function Conductor:update(deltaTime)
   -- adjusting calculated time for start offset
   self.seconds.real = self.seconds.calculated + self.offset;
   
+  self.clock = math.floor(self.seconds.real * 1000);
+  
   -- calculating total beats
   self.beat.total = math.floor(self.seconds.real / (60 / self.bpm));
   self.beat.momentary = (self.beat.total % 4) + 1;
@@ -76,31 +93,33 @@ function Conductor:update(deltaTime)
 end
 
 function Conductor:updateDebugStack()
+  -- defines stuff to monitor in debug stack and updates it every frame
   self.debug.stack = {
     {key="time", value=self.time},
     {key="tick", value=self.tick},
-    {key="tick length", value=self.tickLength},
-    {key="lerp calc time", value=self.calculationLerpTime},
     {key="seconds - source", value=self.seconds.source},
     {key="seconds - calc", value=self.seconds.calculated},
     {key="beat - total", value=self.beat.total},
     {key="beat - moment", value=self.beat.momentary},
-    {key="measure - total", value=self.measure.total}
+    {key="measure - total", value=self.measure.total},
+    {key="clock", value=self.clock}
   };
 end
 
 function Conductor:printDebugStack()
+  -- draws the debug stack;
   for i, v in pairs(self.debug.stack) do
-    lg.printf(string.format("%-17s:%-14.3f", v.key, v.value), self.debug.x, self.debug.y + (self.debug.lineHeight * i), self.debug.width);
+    lg.printf(string.format("%-17s:%-14.1f", v.key, v.value), self.debug.x, self.debug.y + (self.debug.lineHeight * i), self.debug.width);
   end
 end
 
 function Conductor:drawBeatDisplay(x, y)
+  -- for debugging purposes
   boxScale = 5;
   spacing = 2;
   
   if(self.beat.momentary == 1) then
-    lg.setColor(0, 0, 1);
+    lg.setColor(1, 0, 0.3);
   else
     lg.setColor(1, 1, 1);
   end
@@ -131,7 +150,7 @@ function Conductor:drawBeatDisplay(x, y)
 end
 
 function Conductor:drawDebug()
-  self:printDebugStack();
+  --self:printDebugStack();
   self:drawBeatDisplay(0, 13);
 end
 
