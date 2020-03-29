@@ -1,13 +1,13 @@
 Stage = class('Stage');
 
 function Stage:initialize(conductor)
-  self.conductor = Conductor:new("sounds/selftest/ok.wav", 128, -0.9);
+  self.conductor = conductor;
   self.conductor:play();
   
   
   
   -- master game settings
-  self.speed = 6;
+  self.speed = 5;
   self.fretSize = 16;
   self.spacing = 0;
   
@@ -16,7 +16,7 @@ function Stage:initialize(conductor)
   self.fret.y = 135;
   
   self.threshold = {};
-  self.threshold.killZone = 200;
+  self.threshold.killZone = 50;
   self.threshold.limiter = 100;
   
   
@@ -53,8 +53,10 @@ function Stage:initialize(conductor)
   
   -- debug management
   self.debug = false;
+  
   self.lastNoteJudgement = 0;
   self.score = 0;
+  self.combo = 0;
   
   
   -- editing management
@@ -120,13 +122,23 @@ end
 
 function Stage:processNote(button, noteNum)
   for i, v in pairs(self.notes) do
+    -- checks if the note is alive and not passed the frets and the right button
     if(v.note == noteNum and v.alive == true and v.y > (self.conductor.clock - self.threshold.killZone)) then
       if(self.conductor.clock >= (v.y - self.threshold.limiter)) then
         v.alive = false;
         v.judgement = (self.conductor.clock - v.y) / 100;
-        button.processed = true;
-        self.score = self.score + (100 * (1 - clamp(math.abs(v.judgement), 0, 1)));
+        
+        if(i > 1 and self.notes[i-1].alive == true) then
+          self.combo = 0;
+        end
+        
+        self.combo = self.combo + 1;
+        
+        scoreCalc = 10 * (1 - clamp(math.abs(v.judgement), 0, 1)) * self.combo;
+        self.score = self.score + math.floor(scoreCalc);
         self.lastNoteJudgement = v.judgement;
+        
+        button.processed = true;
         break;
       end
     end
@@ -222,6 +234,7 @@ function Stage:draw()
   lg.print("a p: " .. tostring(self.buttons.a.processed), 5, 35);
   lg.print("lng: " .. self.lastNoteJudgement, 5, 65);
   lg.print("score: " .. self.score, 5, 80);
+  lg.print("combo: " .. self.combo, 5, 95);
 
   
   if(self.buttons.a.state == true) then
