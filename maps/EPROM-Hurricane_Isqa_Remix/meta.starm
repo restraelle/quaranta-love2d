@@ -1,0 +1,21 @@
+{
+    "meta": {
+        "title": "Hurricane",
+        "artist": "EPROM",
+        "album": "Hurricane - ISQA Remix",
+        "year": "2017",
+        "remixer": {
+            "artist": "Isqa"
+        }
+    },
+    "sources": {
+        "0": {
+            "filename": "main.mp3",
+            "cover": "cover.jpg",
+            "banner": null
+        }
+    },
+    "mapping": {
+        "offset": "0.0"
+    }
+}

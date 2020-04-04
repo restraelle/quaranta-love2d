@@ -11,3 +11,10 @@ settings.controls.a = "a";
 settings.controls.b = "s";
 settings.controls.c = "k";
 settings.controls.d = "l";
+
+settings.controls.start = "return";
+
+settings.controls.up = "up";
+settings.controls.down = "down";
+settings.controls.left = "left";
+settings.controls.right = "right";

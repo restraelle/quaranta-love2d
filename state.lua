@@ -10,12 +10,12 @@ end
 
 State.static.stateLinkedList = {};
 
-local function State:raise(errorTab)
+function State:raise(errorTab)
   -- error format {errorCode: "KILLED_FORCEFULLY", message: "A kill event was pushed to the state."}
   table.insert(self.error, errorTab);
 end
 
-local function State:kill()
+function State:kill()
   self.errorRaised = true;
 end
 

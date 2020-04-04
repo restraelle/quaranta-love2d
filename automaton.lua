@@ -1,18 +1,20 @@
 Automaton = class("Automaton");
 
-function Automaton:initialize(stateName)
+function Automaton:initialize(stateName, payload)
   self.state = nil;
   self.isLoading = true;
 
-  self:switch(stateName);
+  self:switch(stateName, payload);
 end
 
-function Automaton:switch(stateName)
+function Automaton:switch(stateName, payload)
   self.isLoading = true;
   if(stateName == "mainmenu") then
-    self.state = StateMainMenu:new();
+    self.state = StateMainMenu:new(payload);
+  elseif(stateName == "game") then
+    self.state = StateGame:new(payload);
   else
-    self.state = State:new();
+    self.state = State:new(payload);
   end
   self.isLoading = false;
 end
@@ -28,7 +30,7 @@ end
 
 function Automaton:draw()
   if(self.isLoading == false) then
-    if(self.errorRaised == false) then
+    if(self.state.errorRaised == false) then
       self.state:drawDebug();
       self.state:draw();
     else
@@ -39,15 +41,15 @@ end
 
 function Automaton:keypressed(k)
   if(self.isLoading == false) then
-    if(self.errorRaised == false) then
+    if(self.state.errorRaised == false) then
       self.state:keypressed(k);
     end
   end
 end
 
 function Automaton:constantKeyCheck(dt)
-  if(state.isLoading == false) then
-    if(self.errorRaised == false) then
+  if(self.isLoading == false) then
+    if(self.state.errorRaised == false) then
       self.state:constantKeyCheck(dt);
     end
   end

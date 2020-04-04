@@ -1,0 +1,21 @@
+{
+    "meta": {
+        "title": "Lonely Moon",
+        "artist": "MiniM",
+        "album": "Lonely Moon - Moo Remix",
+        "year": "2018",
+        "remixer": {
+            "artist": "Moo"
+        }
+    },
+    "sources": {
+        "0": {
+            "filename": "main.mp3",
+            "cover": "cover.jpg",
+            "banner": null
+        }
+    },
+    "mapping": {
+        "offset": "0.0"
+    }
+}
