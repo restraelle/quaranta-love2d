@@ -38,3 +38,8 @@ function initialize2DArray(x, y)
 	end
 	return arr;
 end
+
+function resizeImageByScale(image, newWidth, newHeight)
+    local currentWidth, currentHeight = image:getDimensions()
+    return ( newWidth / currentWidth ), ( newHeight / currentHeight )
+end

@@ -10,6 +10,8 @@ function StateMainMenu:initialize()
 
   self.time = 0;
 
+  self.scheduler = Scheduler:new();
+
   self.gui = {};
   self.gui.items = {};
   self:setupGUIItems();
@@ -17,10 +19,12 @@ function StateMainMenu:initialize()
   self.gui.stars = {};
   self:setupStars();
 
+  self.gui.starSpeed = {1};
+
   self.gui.tweens = {};
-  table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.logo, {y = 60, opacity = 1}, 'outElastic'));
-  table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.start, {y = 120}, 'outElastic'));
-  table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.startSelector, {y = 120}, 'outElastic'));
+  table.insert(self.gui.tweens, tween.new(1.0, self.gui.items.logo, {y = 60, opacity = 1}, 'outExpo'));
+  table.insert(self.gui.tweens, tween.new(1.0, self.gui.items.start, {y = 120}, 'outExpo'));
+  table.insert(self.gui.tweens, tween.new(1.0, self.gui.items.startSelector, {y = 120}, 'outExpo'));
   table.insert(self.gui.tweens, tween.new(1, self.gui.items.shutterA, {y = -81}, 'outExpo'));
   table.insert(self.gui.tweens, tween.new(1, self.gui.items.shutterB, {y = 161}, 'outExpo'));
 
@@ -99,9 +103,9 @@ function StateMainMenu:setupStars()
       y = math.random(0, 160),
       speed = math.random(10, 70),
       color = {
-        r = math.random(0, 1),
-        g = math.random(0, 1),
-        b = math.random(0, 1);
+        r = 1,
+        g = 1,
+        b = 1;
       }
     });
   end
@@ -123,13 +127,15 @@ function StateMainMenu:updateStars(dt)
     if(v.x > 240) then
       v.x = -1;
     end
-    v.x = v.x + (v.speed * dt);
+    v.x = v.x + (v.speed * self.gui.starSpeed[1] * dt);
   end
 end
 
 function StateMainMenu:update(dt)
   self.time = self.time + dt;
 
+  self.scheduler:update(dt);
+  
   self:updateTweens(dt);
   self:updateStars(dt);
 
@@ -140,6 +146,15 @@ function StateMainMenu:drawStars()
   for i, v in pairs(self.gui.stars) do
     lg.setColor(v.color.r, v.color.g, v.color.b, 1);
     lg.rectangle("fill", v.x, v.y, 1, 1);
+
+    lg.setColor(v.color.r, v.color.g, v.color.b, 0.4);
+    lg.rectangle("fill", v.x-1, v.y, 1, 1);
+
+    lg.setColor(v.color.r, v.color.g, v.color.b, 0.2);
+    lg.rectangle("fill", v.x-2, v.y, 1, 1);
+
+    lg.setColor(v.color.r, v.color.g, v.color.b, 0.1);
+    lg.rectangle("fill", v.x-3, v.y, 1, 1);
   end
   lg.setColor(1, 1, 1, 1);
 end
@@ -174,18 +189,18 @@ function StateMainMenu:draw()
   -- start text
   lg.draw(self.gui.items.start.renderable, self.gui.items.start.x, self.gui.items.start.y, 0, 1, 1, self.gui.items.start.originX, self.gui.items.start.originY);
 
-  -- shutters
-  lg.setColor(0, 0, 0, 1);
-  lg.rectangle("fill", self.gui.items.shutterA.x, self.gui.items.shutterA.y, 240, 80);
-  lg.rectangle("fill", self.gui.items.shutterB.x, self.gui.items.shutterB.y, 240, 80);
-  lg.setColor(1, 1, 1, 1);
-
   if(self.case == CASE_MENU) then
     self:drawMenu(10, 10);
   end
 
   -- copyright text
   lg.print("(c)2020 Toxxy. All rights reserved.", 0, 150);
+
+  -- shutters
+  lg.setColor(0, 0, 0, 1);
+  lg.rectangle("fill", self.gui.items.shutterA.x, self.gui.items.shutterA.y, 240, 80);
+  lg.rectangle("fill", self.gui.items.shutterB.x, self.gui.items.shutterB.y, 240, 80);
+  lg.setColor(1, 1, 1, 1);
 end
 
 function StateMainMenu:menuMoveUp()
@@ -200,8 +215,16 @@ function StateMainMenu:menuMoveDown()
   end
 end
 
+function StateMainMenu:switchToGame()
+  A:switch("songselect");
+end
+
 function StateMainMenu:menuSelect()
-  if(self.selector.source == MENU_QUIT) then
+  if(self.selector.source == MENU_PLAY) then
+    table.insert(self.gui.tweens, tween.new(0.6, self.gui.items.shutterA, {y = 0}, 'outExpo'));
+    table.insert(self.gui.tweens, tween.new(0.6, self.gui.items.shutterB, {y = 80}, 'outExpo'));
+    self.scheduler:waitToRun(self.switchToGame, 0.6);
+  elseif(self.selector.source == MENU_QUIT) then
     love.event.quit(0);
   end
 end
@@ -214,6 +237,7 @@ function StateMainMenu:keypressed(k)
         table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.logo, {y = -120, opacity = 1}, 'outElastic'));
         table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.start, {y = 200}, 'outElastic'));
         table.insert(self.gui.tweens, tween.new(1.5, self.gui.items.startSelector, {y = 200}, 'outElastic'));
+        table.insert(self.gui.tweens, tween.new(1.5, self.gui.starSpeed, {0.2}, 'outQuad'));
         self.case = CASE_MENU;
       end
     end

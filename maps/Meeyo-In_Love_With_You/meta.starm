@@ -1,12 +1,9 @@
 {
     "meta": {
-        "title": "Lonely Moon",
-        "artist": "MiniM",
-        "album": "Lonely Moon - Moo Remix",
-        "year": "2018",
-        "remixer": {
-            "artist": "Moo"
-        }
+        "title": "In Love With You",
+        "artist": "Meeyo",
+        "album": "In Love With You",
+        "year": "2017"
     },
     "sources": {
         "0": {
@@ -16,6 +13,7 @@
         }
     },
     "mapping": {
-        "offset": "0.0"
+        "offset": "0.0",
+        "previewStart": "18"
     }
 }

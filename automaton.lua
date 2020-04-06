@@ -13,6 +13,8 @@ function Automaton:switch(stateName, payload)
     self.state = StateMainMenu:new(payload);
   elseif(stateName == "game") then
     self.state = StateGame:new(payload);
+  elseif(stateName == "songselect") then
+    self.state = StateSongSelect:new(payload);
   else
     self.state = State:new(payload);
   end
@@ -31,8 +33,8 @@ end
 function Automaton:draw()
   if(self.isLoading == false) then
     if(self.state.errorRaised == false) then
-      self.state:drawDebug();
       self.state:draw();
+      -- self.state:drawDebug();
     else
       self.state:drawErrors();
     end
